@@ -1,6 +1,7 @@
 import tkinter as tk
 import datetime
-import sqlite3 as sql
+# import sqlite3 as sql
+import mysql.connector as mysql
 
 
 def get_input():
@@ -11,21 +12,30 @@ def get_input():
 
     #upon clicking the  'sign in' button this script will now create the database file 'usersDB.db' in the same directory you have your .py script, 
     #if the database doesn't already exist. Otherwise it will access the existing 'usersDB.db' file, and insert the sign in entry as a new record. 
-    conn = sql.connect('usersDB.db')
-    c = conn.cursor()
+    db = mysql.connect(
+      host='localhost',
+      user='root',
+      password='3260',
+      database='usersdb',
+      #used to specify MySQL instance port, otherwise defaults to 3306
+      port=3307
+    )
+    c = db.cursor()
 
-
+    #STRING is sometimes a valid datatype for databases, but TEXT or VARCHAR(255) is more reliable
     c.execute('''
             CREATE TABLE IF NOT EXISTS users
-            (name STRING, age INT, date STRING)
+            (name TEXT, email TEXT, date DATE)
               ''')
     
+    #(? ? ?) as placeholders is used for sqlite, (%s, %s, %s) is used for mysql
+    #also changed previous "age INT" column to "email TEXT", below and above, not sure why that worked before
     c.execute('''
-            INSERT INTO users (name, age, date) VALUES (?, ?, ?)
-              ''', (user_input_Name, user_input_Email, str(datetime.date.today()))
+            INSERT INTO users (name, email, date) VALUES (%s, %s, %s) 
+              ''', (user_input_Name, user_input_Email, datetime.date.today())
              )
     
-    conn.commit()
+    db.commit()
     # end of db code
     
 
