@@ -10,14 +10,15 @@ def get_input():
 
     # start of db code
 
-    #upon clicking the  'sign in' button this script will now create the database file 'usersDB.db' in the same directory you have your .py script, 
-    #if the database doesn't already exist. Otherwise it will access the existing 'usersDB.db' file, and insert the sign in entry as a new record. 
+    #"usersdb" database must already be created in MySQL server
+    #upon clicking the  'sign in' button this script will now create the users table if it does not exist
+    #Otherwise it will access the existing 'users' table, and insert the sign in entry as a new record. 
     db = mysql.connect(
       host='localhost',
-      user='root',
-      password='3260',
-      database='usersdb',
-      #used to specify MySQL instance port, otherwise defaults to 3306
+      user='root',        #replace with MySQL authorized username
+      password='****',    #replace with password
+      database='usersdb', 
+      #port used to specify MySQL instance port, otherwise defaults to 3306
       port=3307
     )
     c = db.cursor()
@@ -25,14 +26,14 @@ def get_input():
     #STRING is sometimes a valid datatype for databases, but TEXT or VARCHAR(255) is more reliable
     c.execute('''
             CREATE TABLE IF NOT EXISTS users
-            (name TEXT, email TEXT, date DATE)
+            (name TEXT, email TEXT, datetime DATETIME)
               ''')
     
     #(? ? ?) as placeholders is used for sqlite, (%s, %s, %s) is used for mysql
     #also changed previous "age INT" column to "email TEXT", below and above, not sure why that worked before
     c.execute('''
-            INSERT INTO users (name, email, date) VALUES (%s, %s, %s) 
-              ''', (user_input_Name, user_input_Email, datetime.date.today())
+            INSERT INTO users (name, email, datetime) VALUES (%s, %s, %s) 
+              ''', (user_input_Name, user_input_Email, datetime.datetime.now())
              )
     
     db.commit()
